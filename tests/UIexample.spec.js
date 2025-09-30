@@ -45,7 +45,7 @@ test('playground', async ({browser, page}) =>
   await expect (documentLink).toHaveAttribute("class","blinkingText");
   
 });
-test.only('UI Tabs switch', async ({browser}) =>
+test('UI Tabs switch', async ({browser}) =>
 {
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -63,5 +63,4 @@ test.only('UI Tabs switch', async ({browser}) =>
   console.log(domainName);
 
   await page.locator("#username").fill(domainName);
-  await page.pause();
 });

@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
+import { trace } from 'console';
 
 /**
  * Read environment variables from file.
@@ -29,6 +30,8 @@ const config = {
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://localhost:3000', 
     browserName: 'chromium',
+    screenshot: 'on',
+    trace: 'on',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     // trace: 'on-first-retry',
   },
