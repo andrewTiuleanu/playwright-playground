@@ -14,6 +14,7 @@ import { trace } from 'console';
  * @see https://playwright.dev/docs/test-configuration
  */
 const config = {
+  
   testDir: './tests',
   /* Run tests in files in parallel */
   //fullyParallel: true,
@@ -27,6 +28,7 @@ const config = {
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+    actionTimeout: 5000,
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://localhost:3000', 
     browserName: 'chromium',
