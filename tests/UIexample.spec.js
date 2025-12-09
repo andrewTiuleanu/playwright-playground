@@ -95,7 +95,7 @@ test('Successful register for purchase', async ({ browser}) =>
     await page.locator("[type='checkbox']").check();
     await page.locator("#login").click();
   });
-test.only('Login, complete purchase and check order history', async ({ browser}) =>
+test('Login, complete purchase and check order history', async ({ browser}) =>
 {
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -136,4 +136,71 @@ test.only('Login, complete purchase and check order history', async ({ browser})
   await expect(page.locator(".email-container")).toContainText(testData.country);
   await expect(page.locator(".email-container")).toContainText(orderId);
   await expect(page.locator(".email-container")).toContainText(testData.testProductName);
+});
+test.only('Client app login', async ({ browser}) =>
+{
+  const productName = "iphone 13 pro";
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const productForPurchase = page.locator(".card-body");
+  await page.goto("https://rahulshettyacademy.com/client/auth/login/");
+  await page.locator("#userEmail").fill(testData.email);
+  await page.locator("#userPassword").fill(testData.password);
+  await page.locator("#login").click();
+  await productForPurchase.first().waitFor();
+  const productsCount = await productForPurchase.count();
+  for (let i = 0; i < productsCount; ++i)
+  {
+    if(await productForPurchase.nth(i).locator("b").textContent() === productName)
+    {
+      await productForPurchase.nth(i).locator("text=Add To Cart").click();
+    }
+  }
+  
+  await page.locator('[routerlink*="/cart"]').click();
+  await page.locator("div li").first().waitFor();
+  const bool = page.locator("h3:has-text(\"" + testData.testProductName + "\")").isVisible();
+  await expect(bool).toBeTruthy();
+  await page.locator("button:has-text('Checkout')").click();
+  await page.locator("[placeholder*='Country']").pressSequentially('Ind');
+  const countryDropdown = page.locator(".ta-results");
+  await countryDropdown.waitFor();
+  const countryOptionsCount = await countryDropdown.locator("button").count();
+  for (let i = 0; i < countryOptionsCount; ++i)
+  {
+    if (await countryDropdown.locator("button").nth(i).textContent() === ' India')
+    {
+      await countryDropdown.locator("button").nth(i).click();
+      break;
+    }
+  }
+  expect(await page.locator(".user__name [type='text']").first()).toHaveText(testData.email);
+
+  await page.locator(".form__cc input").nth(2).fill("Andrei Tester");
+  await page.locator(".form__cc select").nth(0).selectOption("03");
+  await page.locator(".form__cc select").nth(1).selectOption("26");
+  await page.locator(".form__cc input").nth(0).fill("4542 9931 9292 2293");
+  await page.locator(".form__cc input").nth(1).fill("454");
+  await page.locator(".form__cc input").nth(3).fill("rahulshettyacademy");
+
+  await page.locator(".action__submit").click();
+
+  await expect(page.locator(".hero-primary")).toHaveText(" Thankyou for the order. ");
+  const orderId = await page.locator(".em-spacer-1 .ng-star-inserted").textContent();
+  const formatOrderId = orderId.split("|")[1].trim();
+
+  await page.locator("button[routerlink*='myorders']").click();
+
+  await page.locator("tbody tr").first().waitFor();
+  const ordersCount = await page.locator("tbody tr").count();
+  
+  for (let i = 0; i < ordersCount; ++i)
+  {
+    if (await page.locator("tbody tr").nth(i).locator("th").textContent() === formatOrderId)
+      await page.locator("tbody tr").nth(i).locator("button").first().click();
+      break;
+  }
+
+  await expect(page.locator(".col-text")).toContainText(formatOrderId);
+ await page.pause();
 });
